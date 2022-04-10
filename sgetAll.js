@@ -7,8 +7,8 @@ export default function sgetAll(object, spmapValue) {
   const spmap = spathPrepare(spmapValue);
   const [walk] = getWalk(undefined, spmap);
   const result = getNewRoot(spmap);
-  for (const [key, spath] of walk) {
-    result[key] = sget(object, spath);
+  for (const [key, [spath, defaultValue]] of walk) {
+    result[key] = sget(object, spath, defaultValue);
   }
   return result;
 }
