@@ -1,0 +1,24 @@
+{
+  "name": "sget",
+  "version": "1.0.0",
+  "description": "sget is function that gets the value at path in special format of object. If the resolved value is undefined, the defaultValue is returned in its place.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "mocha -r esm"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/pbardov/sget.git"
+  },
+  "author": "Pavel Bardov",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pbardov/sget/issues"
+  },
+  "homepage": "https://github.com/pbardov/sget#readme",
+  "keywords": [],
+  "devDependencies": {
+    "mocha": "^9.2.2"
+  }
+}
