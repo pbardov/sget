@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "mocha -r esm"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
