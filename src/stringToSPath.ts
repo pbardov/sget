@@ -1,20 +1,22 @@
-import SPath, {KeyOp} from './SPath.type.js';
+import SPath, { KeyOp } from './types/SPath.type.js';
 
 /**
- * Converts `string` to a property super-path array.
+ * Converts a string representation of a structured path into an SPath array.
  *
- * @private
- * @param {string} string The string to convert.
- * @returns {Array} Returns the property path array.
+ * @param string The input string to convert.
+ * @returns An SPath array representing the structured path.
  */
-function stringToSPath(string: string): SPath {
+export default function stringToSPath(string: string): SPath {
   const path: SPath = [];
   const parents = new Map();
   let current = path as KeyOp;
+
   for (const [, key, op] of string.matchAll(/(.*?)(>=|<=|[\.\[\]:!\?%><]|$)/g)) {
     const sub: KeyOp = [key, op];
     if (!key && !op) continue;
+
     current.push(sub);
+
     switch (op) {
       case '[': {
         parents.set(sub, current);
@@ -34,6 +36,6 @@ function stringToSPath(string: string): SPath {
         break;
     }
   }
+
   return path;
 }
-export default stringToSPath;

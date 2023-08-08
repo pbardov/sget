@@ -3,40 +3,29 @@ import castSPath from './castSPath.js';
 import getWalk from './internal/getWalk.js';
 import getNewRoot from './internal/getNewRoot.js';
 import getWorkLevel from './internal/getWorkLevel.js';
-import SPath from './SPath.type.js';
-import KeyType, {isKeyType} from './types/Key.type.js';
+import SPath from './types/SPath.type.js';
+import { isKeyType } from './types/Key.type.js';
 
+// Control operations used in the structured path
 const CONTROL_OPS = ['.', '[', ']'];
 
 /**
- * Gets the value at `path` of `object`. If the resolved value is
- * `undefined`, the `defaultValue` is returned in its place.
+ * Retrieves a value from an object using a structured path (SPath).
  *
- * @since 3.7.0
- * @category Object
- * @param {Object|Array} object The object to query.
- * @param spathValue
- * @param {*} [defaultValue] The value returned for `undefined` resolved values.
- * @param pos
- * @returns {*} Returns the resolved value.
- * @see has, hasIn, set, unset
- * @example
- *
- * const object = [{ key: { index: 0 } }, { key: { index: 1 } }, { key: { index: 3 } }]
- *
- * sget(object, '[.key.index>0].key.index')
- * // => 1
- *
- * sget(object, '[.key.index:4]', 'default')
- * // => 'default'
+ * @param object The object to traverse.
+ * @param spathValue The structured path (SPath) string or array.
+ * @param defaultValue The default value to return if the path is not found.
+ * @param pos The starting position in the spathValue array (optional).
+ * @returns The value found at the specified path, or the defaultValue if not found.
  */
-function sget(object: any, spathValue: string | SPath, defaultValue: any = undefined, pos = 0) {
+export default function sget(object: any, spathValue: string | SPath, defaultValue: any = undefined, pos = 0) {
 	let current;
 	let currentKey;
 	let currentLevel;
 	let newRoot;
 	let newRootLevel = 0;
 
+	// Define the Processing type to keep track of path traversal
 	type Processing = {
 		level: number;
 		spath: SPath;
@@ -46,11 +35,15 @@ function sget(object: any, spathValue: string | SPath, defaultValue: any = undef
 		nextRootKey?: string | number;
 	};
 
+	// Convert the input structured path to an array and slice it starting from the specified position
 	const mainSpath = castSPath(spathValue).slice(pos);
-	const processings: Processing[] = [{level: 0, root: object, rootKey: undefined, spath: mainSpath}];
+	// Initialize the list of path traversal steps with the main structured path
+	const processings: Processing[] = [{ level: 0, root: object, rootKey: undefined, spath: mainSpath }];
 
+	// Continue traversal as long as there are steps to process
 	while (processings.length) {
-		const {level, root, rootKey, spath, nextRoot: nr, nextRootKey: nrk} = processings.shift() as Processing;
+		// Destructure the current processing step
+		const { level, root, rootKey, spath, nextRoot: nr, nextRootKey: nrk } = processings.shift() as Processing;
 		current = root;
 		currentKey = rootKey;
 		currentLevel = level;
@@ -62,9 +55,11 @@ function sget(object: any, spathValue: string | SPath, defaultValue: any = undef
 
 		let nextRoot = nr;
 		let nextRootKey = nrk;
+
 		if (currentLevel === 1) {
 			nextRoot = current;
 			nextRootKey = currentKey;
+
 			if (newRootLevel < 1) {
 				newRoot = getNewRoot(newRoot);
 				newRootLevel = 1;
@@ -73,6 +68,7 @@ function sget(object: any, spathValue: string | SPath, defaultValue: any = undef
 
 		let bracket = spath.length ? spath[spath.length - 1][1] === ']' : false;
 
+		// Handle cases where the nextRoot is the same as the newRoot
 		if (
 			bracket
 			&& newRootLevel >= 1
@@ -86,14 +82,17 @@ function sget(object: any, spathValue: string | SPath, defaultValue: any = undef
 			continue;
 		}
 
+		// Iterate through the structured path elements
 		for (let npos = 0; npos < spath.length; npos += 1) {
 			const [key, op, ...sub] = spath[npos];
-			const workLevel = getWorkLevel(level, npos, spath); // level + npos + 1;
+			const workLevel = getWorkLevel(level, npos, spath);
 
+			// Check if this is the last element and handle empty keys
 			if (key === '' && (!op || op === ']') && level + npos === 0) {
 				break;
 			}
 
+			// Get the walk and walkLevel using the getWalk function
 			const [walk, walkLevel] = getWalk(current, key, currentKey, currentLevel, workLevel);
 			let nextLevel = walkLevel;
 			current = undefined;
@@ -101,16 +100,19 @@ function sget(object: any, spathValue: string | SPath, defaultValue: any = undef
 			currentKey = undefined;
 
 			if (walk) {
+				// Iterate through the walk items
 				for (let [nextKey, next] of walk) {
 					if (nextLevel === 1 && current === undefined) {
 						nextRoot = next;
 						nextRootKey = nextKey;
+
 						if (newRootLevel < 1) {
 							newRoot = getNewRoot(newRoot);
 							newRootLevel = 1;
 						}
 					}
 
+					// Handle cases where the nextRoot is the same as the newRoot
 					if (
 						bracket
 						&& newRootLevel >= 1
@@ -125,6 +127,7 @@ function sget(object: any, spathValue: string | SPath, defaultValue: any = undef
 					}
 
 					if (nextLevel === workLevel) {
+						// Handle control operations
 						if (CONTROL_OPS.includes(op)) {
 							if (op === '[') {
 								next = sget(next, sub as SPath);
@@ -133,12 +136,15 @@ function sget(object: any, spathValue: string | SPath, defaultValue: any = undef
 								const result = next;
 								next = newRoot;
 								nextKey = '';
+
 								if (result && isKeyType(nextRootKey)) {
 									next[nextRootKey] = nextRoot;
 								}
+
 								nextLevel = 0;
 							}
 						} else {
+							// Handle comparison and modification operations
 							const right = spath
 								.slice(npos + 1)
 								.map(v => {
@@ -148,6 +154,7 @@ function sget(object: any, spathValue: string | SPath, defaultValue: any = undef
 								.join('');
 
 							spath.splice(npos + 1);
+
 							if (bracket) {
 								spath.push(['', ']']);
 							}
@@ -192,15 +199,19 @@ function sget(object: any, spathValue: string | SPath, defaultValue: any = undef
 									next = { [nextKey]: next };
 									nextLevel -= 1;
 								}
+
 								const nextSpath = spath.slice(npos + 1);
+
 								if (!nextSpath.length) {
 									nextSpath.push(['', '']);
 								}
-								processings.push({level: nextLevel, root: next, rootKey: nextKey, spath: nextSpath, nextRoot, nextRootKey});
+
+								processings.push({ level: nextLevel, root: next, rootKey: nextKey, spath: nextSpath, nextRoot, nextRootKey });
 							}
 						}
 					}
 				}
+
 				if (current === undefined) {
 					break;
 				}
@@ -208,6 +219,7 @@ function sget(object: any, spathValue: string | SPath, defaultValue: any = undef
 				break;
 			}
 		}
+
 		if (current !== undefined && !bracket) {
 			break;
 		}
@@ -215,5 +227,3 @@ function sget(object: any, spathValue: string | SPath, defaultValue: any = undef
 
 	return current !== undefined ? current : defaultValue;
 }
-
-export default sget;

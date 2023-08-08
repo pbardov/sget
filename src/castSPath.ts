@@ -1,15 +1,12 @@
 import stringToSPath from './stringToSPath.js';
-import SPath from './SPath.type.js';
+import SPath from './types/SPath.type.js';
 
 /**
- * Casts `value` to a super-path array if it's not one.
+ * Casts a value to an SPath array. If the input value is already an array, it's treated as an SPath. If the input value is a string, it's converted to an SPath using the stringToSPath function.
  *
- * @private
- * @param {*} value The value to inspect.
- * @returns {Array} Returns the cast property path array.
+ * @param value The value to cast.
+ * @returns An SPath array.
  */
-function castSPath(value: string | SPath): SPath {
+export default function castSPath(value: string | SPath): SPath {
   return Array.isArray(value) ? value : stringToSPath(value);
 }
-
-export default castSPath;
