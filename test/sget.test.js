@@ -1,7 +1,7 @@
 /* eslint-disable */
 import assert from 'assert';
-import sget from '../sget.js';
-import sgetAll from '../sgetAll.js';
+import sget from '../lib/sget.js';
+import sgetAll from '../lib/sgetAll.js';
 
 const data = {
   key: { level: 0, index: [0], str: '0' },
