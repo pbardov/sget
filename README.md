@@ -16,7 +16,7 @@ Whether you're working with deeply nested JSON structures, configuration objects
 Install the library using your preferred package manager:
 
 ```bash
-npm install sget
+npm install data-sget
 ```
 
 # Syntax
@@ -105,8 +105,8 @@ console.log(result);
 Here are some examples of how to use the library:
 
 ```javascript
-import sget from 'sget';
-import {sgetAll} from 'sget';
+import sget from 'data-sget';
+import {sgetAll} from 'data-sget';
 
 const data = {
     // ...
