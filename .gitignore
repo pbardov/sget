@@ -1,6 +1,7 @@
 lib/
 types/
 *.res
+/test*.js
 
 # Logs
 logs

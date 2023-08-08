@@ -1,7 +1,7 @@
 {
   "name": "sget",
-  "version": "1.0.0",
-  "description": "sget is function that gets the value at path in special format of object. If the resolved value is undefined, the defaultValue is returned in its place.",
+  "version": "1.0.1",
+  "description": "`sget` is a lightweight library that provides a convenient and intuitive way to extract values from complex nested data structures using a simplified syntax. With `sget`, you can easily navigate through deeply nested objects and arrays, apply conditional operations, and retrieve values efficiently.",
   "main": "lib/index.js",
   "types": "types",
   "type": "module",
@@ -16,7 +16,13 @@
     "url": "https://github.com/pbardov/sget/issues"
   },
   "homepage": "https://github.com/pbardov/sget#readme",
-  "keywords": [],
+  "keywords": [
+    "nested property access",
+    "data extraction",
+    "deep object access",
+    "data structures",
+    "path"
+  ],
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": ">=5.57.0",
     "@typescript-eslint/parser": ">=5.57.0",
