@@ -9,7 +9,10 @@
     "build": "tsc -p .",
     "test": "mocha"
   },
-  "repository": "git+ssh://git@github.com/pbardov/sget.git",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/pbardov/sget.git"
+  },
   "author": "Pavel Bardov",
   "license": "MIT",
   "bugs": {
