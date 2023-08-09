@@ -1,6 +1,6 @@
 {
   "name": "data-sget",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "`sget` is a lightweight library that provides a convenient and intuitive way to extract values from complex nested data structures using a simplified syntax. With `sget`, you can easily navigate through deeply nested objects and arrays, apply conditional operations, and retrieve values efficiently.",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
